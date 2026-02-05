@@ -1,0 +1,37 @@
+# Computer Vision
+opencv-python>=4.8.0
+mediapipe>=0.10.13
+
+# Deep Learning
+torch>=2.2.0
+torchvision>=0.17.0
+
+# NLP & Embeddings
+sentence-transformers>=2.2.2
+
+# Vector Database
+chromadb>=0.4.22
+
+# LLM & Agents
+langchain>=0.3.0
+langchain-community>=0.3.0
+langgraph>=0.2.0
+
+# API
+fastapi>=0.110.0
+uvicorn[standard]>=0.27.0
+python-multipart>=0.0.6
+pydantic>=2.6.0
+
+# Data Processing
+numpy>=1.24.3
+pandas>=2.1.4
+
+# Utilities
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+pillow>=10.2.0
+tqdm>=4.66.1
+
+# Testing
+pytest>=7.4.3
