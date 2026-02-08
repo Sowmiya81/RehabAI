@@ -1,6 +1,6 @@
 # Computer Vision
 opencv-python>=4.8.0
-mediapipe>=0.10.13
+mediapipe==0.10.14
 
 # Deep Learning
 torch>=2.2.0
