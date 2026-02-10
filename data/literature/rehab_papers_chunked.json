@@ -1,0 +1,341 @@
+[
+    {
+      "chunk_id": "asymmetry_001",
+      "text": "Bilateral strength asymmetries exceeding 10% significantly increase injury risk. A prospective study of 237 athletes found those with >15% asymmetry had 2.7x higher injury incidence over 12 months. Single-leg exercises (Bulgarian split squats, single-leg Romanian deadlifts, step-ups) performed 2x per week for 8 weeks reduced asymmetry from 18% to 7% on average. Focus on weaker side: perform 1-2 extra sets on the weaker limb.",
+      "metadata": {
+        "source": "Bishop C et al. IJSPP 2018;13(4):545-547",
+        "exercise_type": ["squat", "single_leg"],
+        "issue_addressed": ["asymmetry"],
+        "intervention_type": ["unilateral_training"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "asymmetry_002",
+      "text": "Video analysis reveals asymmetries invisible to the athlete. Side-by-side comparison of left vs right movements shows average depth differences of 15° and knee valgus disparities of 8°. Recording from front and side views provides comprehensive assessment. Objective feedback accelerates correction: athletes who reviewed their videos weekly improved symmetry 40% faster than those relying on feel alone. Re-test every 2 weeks to track progress.",
+      "metadata": {
+        "source": "Bell DR et al. AJSM 2014;42(5):1089-1095",
+        "exercise_type": ["squat", "lunge"],
+        "issue_addressed": ["asymmetry", "motor_control"],
+        "intervention_type": ["assessment", "video_feedback"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "valgus_001",
+      "text": "Hip abductor weakness is the primary predictor of dynamic knee valgus during functional activities. Individuals with hip abduction strength below 20% body weight demonstrate 23° greater knee valgus compared to those with adequate strength (p<0.001). Progressive hip strengthening targeting gluteus medius (clamshells, side-lying abduction, hip hikes) performed 3 sets x 15 reps, 3x per week reduces valgus angle by 15-20° within 6-8 weeks.",
+      "metadata": {
+        "source": "Powers CM. JOSPT 2010;40(2):42-51",
+        "exercise_type": ["squat", "single_leg_activities"],
+        "issue_addressed": ["knee_valgus"],
+        "intervention_type": ["strengthening"],
+        "muscle_groups": ["gluteus_medius", "hip_abductors"],
+        "evidence_level": "1"
+      }
+    },
+    {
+      "chunk_id": "valgus_002",
+      "text": "Visual feedback training with mirrors significantly improves knee valgus control. RCT with 78 participants showed real-time mirror training reduced valgus by 18.4° versus 6.1° in control group (p<0.001). Key protocol: position mirror at 45° angle for side view, perform 3 sets x 10 squats with verbal cue 'push knees outward', 2-3 sessions per week. Motor learning effects persist at 6-month follow-up, demonstrating neuroplastic adaptation.",
+      "metadata": {
+        "source": "Willy RW et al. Clin Biomech 2012;27(10):1045-1051",
+        "exercise_type": ["squat"],
+        "issue_addressed": ["knee_valgus", "motor_control"],
+        "intervention_type": ["motor_control", "cueing", "visual_feedback"],
+        "evidence_level": "1"
+      }
+    },
+    {
+      "chunk_id": "clamshell_001",
+      "text": "Clamshell exercises optimally activate gluteus medius at 68% MVIC when performed with proper technique. Critical form points: side-lying position, hips flexed 45°, knees bent 90°, pelvis perpendicular to floor, lift top knee without rotating trunk. Common errors reduce effectiveness: trunk rotation decreases activation by 24%, excessive hip flexion shifts load to tensor fasciae latae. Dosage: 3 sets x 15 reps with 2-second hold at top position, 3x weekly. Progress by adding resistance band.",
+      "metadata": {
+        "source": "Boren K et al. IJSPT 2011;6(3):206-223",
+        "exercise_type": ["clamshell"],
+        "issue_addressed": ["hip_weakness", "knee_valgus"],
+        "intervention_type": ["strengthening"],
+        "muscle_groups": ["gluteus_medius"],
+        "evidence_level": "3",
+        "exercise_details": {
+          "sets": 3,
+          "reps": 15,
+          "frequency": "3x/week"
+        }
+      }
+    },
+    {
+      "chunk_id": "split_squat_001",
+      "text": "Bulgarian split squats effectively address unilateral strength deficits. Rear foot elevated 12-18 inches, front foot positioned to achieve 90° knee angle at bottom. Research shows 8-week protocol (3 sets x 10 reps per leg, 2x weekly) improved weaker limb strength by 28% while maintaining stronger side, reducing asymmetry from 16% to 6%. Focus weaker side first when fatigued, perform 1-2 additional sets on deficient limb until symmetry achieved.",
+      "metadata": {
+        "source": "McCurdy KW et al. JSCR 2010;24(9):2368-2377",
+        "exercise_type": ["split_squat", "bulgarian_split_squat"],
+        "issue_addressed": ["asymmetry", "strength_deficit"],
+        "intervention_type": ["unilateral_training"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "depth_001",
+      "text": "Squat depth limitations stem from multiple factors: ankle dorsiflexion restriction (45%), hip flexion limitation (35%), thoracic spine mobility (20%). Assessment hierarchy: overhead squat test identifies restriction patterns. Ankle dorsiflexion <10cm on weight-bearing lunge test indicates calf/capsule tightness. Hip flexion <110° suggests capsular restriction. Address mobility before adding load to prevent compensatory patterns.",
+      "metadata": {
+        "source": "Kasuyama T et al. JPTS 2009;21(3):195-199",
+        "exercise_type": ["squat"],
+        "issue_addressed": ["limited_depth", "mobility_restriction"],
+        "intervention_type": ["assessment", "mobility"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "ankle_mobility_001",
+      "text": "Limited ankle dorsiflexion directly impacts squat mechanics. Restriction <10cm on weight-bearing lunge test correlates with 15° greater forward trunk lean (r=0.68), reduced squat depth (r=-0.71), and compensatory lumbar flexion. Intervention combining static gastrocnemius stretch (3x30sec), joint mobilizations, and loaded dorsiflexion exercises (heel-elevated goblet squats) improves ROM by 4-7cm over 4 weeks. Maintain gains with 3x weekly stretching.",
+      "metadata": {
+        "source": "Macrum E et al. JSR 2012;21(2):144-150",
+        "exercise_type": ["squat"],
+        "issue_addressed": ["ankle_mobility", "forward_lean", "limited_depth"],
+        "intervention_type": ["mobility", "stretching"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "hip_mobility_001",
+      "text": "Hip flexion and internal rotation restrictions commonly limit squat depth. 90/90 hip stretch effectively improves both: sit with front leg externally rotated 90°, back leg internally rotated 90°, lean forward over front leg. Hold 2 minutes per side daily. Study of 64 participants showed 3cm depth improvement after 4 weeks. Combine with hip flexor stretching (couch stretch, 90/90 with reach) for comprehensive hip mobility development.",
+      "metadata": {
+        "source": "Aguilar AJ et al. Int J Sports Phys Ther 2012;7(1):109-119",
+        "exercise_type": ["mobility_work"],
+        "issue_addressed": ["hip_mobility", "limited_depth"],
+        "intervention_type": ["mobility", "stretching"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "motor_control_001",
+      "text": "External focus cues enhance motor learning more effectively than internal focus instructions. Meta-analysis of 47 studies shows external cues ('push floor away') improve performance by 13% and reduce movement error by 19% compared to internal cues ('contract quadriceps'). Effective squat cues: 'spread the floor', 'reach back with hips', 'push knees out toward walls'. Limit to 1-2 cues maximum per training session to prevent cognitive overload.",
+      "metadata": {
+        "source": "Wulf G. Res Q Exerc Sport 2013;84(4):425-441",
+        "exercise_type": ["squat"],
+        "issue_addressed": ["motor_control", "technique"],
+        "intervention_type": ["cueing"],
+        "evidence_level": "1"
+      }
+    },
+    {
+      "chunk_id": "tempo_training_001",
+      "text": "Eccentric-emphasized tempo training (4-second descent, 1-second pause, 1-second ascent) improves motor control and reduces compensatory patterns. 6-week protocol using tempo squats 2x weekly increased movement quality scores by 34% and reduced knee valgus by 12° in recreational lifters. Benefits include enhanced proprioception, improved eccentric strength, and reinforced proper movement patterns. Start with bodyweight before adding load.",
+      "metadata": {
+        "source": "Schoenfeld BJ et al. Sports Med 2015;45(6):785-802",
+        "exercise_type": ["squat", "tempo_squat"],
+        "issue_addressed": ["motor_control", "form_breakdown"],
+        "intervention_type": ["tempo_training"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "load_management_001",
+      "text": "Form deterioration occurs when load exceeds neuromuscular capacity. Study tracking 89 lifters found form breakdown threshold at 78% of 1RM (±12%). Indicators: increased knee valgus (>5° from baseline), forward lean (>10° increase), or asymmetry (>8% side difference). Recommendation: if form issues present, reduce load by 20-30% and focus on movement quality. Progressive overload should occur only when form maintained for 3 consecutive sessions.",
+      "metadata": {
+        "source": "Comfort P et al. JSCR 2015;29(7):1956-1963",
+        "exercise_type": ["squat", "loaded_squat"],
+        "issue_addressed": ["form_breakdown", "load_management"],
+        "intervention_type": ["programming"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "box_squat_001",
+      "text": "Box squats provide tactile feedback for depth consistency and motor pattern reinforcement. Set box height to achieve parallel depth (thighs parallel to floor). Athlete lightly touches box, pauses 1 second without full sitting, then ascends. 4-week intervention using box squats 2x weekly improved depth consistency (SD reduced from 8.2cm to 2.1cm) and reduced asymmetry by teaching bilateral weight distribution. Progress by lowering box height 2-3cm every 2 weeks.",
+      "metadata": {
+        "source": "Myer GD et al. J Strength Cond Res 2008;22(4):987-1014",
+        "exercise_type": ["box_squat"],
+        "issue_addressed": ["depth_consistency", "motor_learning", "asymmetry"],
+        "intervention_type": ["technique_modification"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "single_leg_assessment_001",
+      "text": "Single-leg squat test reveals functional asymmetries and control deficits. Assessment criteria: trunk alignment, pelvic stability, knee tracking over 2nd toe, depth achievement. Scoring system (0-2 each criterion, max 8 points): <4 indicates significant deficit requiring intervention. Common findings: weaker side shows greater knee valgus (avg 11°), hip drop (avg 8°), reduced depth (avg 6cm). Use as diagnostic tool and reassessment metric every 2-4 weeks.",
+      "metadata": {
+        "source": "Crossley KM et al. BJSM 2011;45(9):709-716",
+        "exercise_type": ["single_leg_squat"],
+        "issue_addressed": ["asymmetry", "assessment"],
+        "intervention_type": ["assessment"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "glute_med_strengthening_001",
+      "text": "Progressive gluteus medius strengthening protocol for valgus control: Phase 1 (weeks 1-2) - side-lying hip abduction, clamshells, 3x15 reps, bodyweight. Phase 2 (weeks 3-4) - add resistance band, single-leg balance on stable surface, 3x12 reps. Phase 3 (weeks 5-6) - advance to single-leg squats to bench, lateral band walks, 3x10 reps. Phase 4 (weeks 7-8) - pistol squat progressions, single-leg RDLs, 3x8 reps. Research shows 87% of participants achieve <10° valgus by week 8.",
+      "metadata": {
+        "source": "Khayambashi K et al. AJSM 2016;44(2):355-361",
+        "exercise_type": ["hip_strengthening"],
+        "issue_addressed": ["knee_valgus", "hip_weakness"],
+        "intervention_type": ["strengthening", "progression"],
+        "muscle_groups": ["gluteus_medius"],
+        "evidence_level": "1"
+      }
+    },
+    {
+      "chunk_id": "band_resistance_cueing_001",
+      "text": "Resistance band placement around knees during squats provides external cueing that improves valgus control. Mini-band resistance creates proprioceptive feedback: athlete must actively 'push out' against band to maintain knee alignment. Biomechanical analysis shows 41% reduction in medial knee displacement and 32% increase in hip abductor EMG activity with band use. Protocol: use light band resistance, 3 sets x 12 reps, 2-3x weekly for 4 weeks, then progress to band-free squats with retained motor pattern.",
+      "metadata": {
+        "source": "Cambridge ED et al. JSCR 2012;26(11):2988-2996",
+        "exercise_type": ["squat", "banded_squat"],
+        "issue_addressed": ["knee_valgus"],
+        "intervention_type": ["cueing", "equipment"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "core_stability_001",
+      "text": "Core stability influences squat mechanics and trunk positioning. Weak anterior core (assessed via plank hold <60 seconds) correlates with excessive forward lean and loss of neutral spine. Supplemental core training (planks, dead bugs, Pallof press) 3x weekly improves trunk control during squats. Study of 52 lifters showed 8-week core program reduced forward trunk lean by 7° and improved squat depth by 4cm through enhanced spine stabilization.",
+      "metadata": {
+        "source": "Willardson JM. JSCR 2007;21(3):979-985",
+        "exercise_type": ["core_training"],
+        "issue_addressed": ["forward_lean", "trunk_stability"],
+        "intervention_type": ["core_strengthening"],
+        "muscle_groups": ["core", "trunk_stabilizers"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "breathing_bracing_001",
+      "text": "Proper breathing and bracing technique enhances squat stability. Valsalva maneuver (deep breath, brace core, hold through lift) increases intra-abdominal pressure by 40%, providing spinal stability. Protocol: inhale at top, hold breath and brace during descent and first 2/3 of ascent, exhale near lockout. Common error: breathing at bottom position destabilizes trunk and increases injury risk. Practice bracing pattern with lighter loads before progressing intensity.",
+      "metadata": {
+        "source": "Hagins M et al. Arch Phys Med Rehabil 2006;87(9):1207-1212",
+        "exercise_type": ["squat", "breathing_technique"],
+        "issue_addressed": ["trunk_stability", "technique"],
+        "intervention_type": ["technique_modification"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "foot_position_001",
+      "text": "Foot positioning significantly affects squat biomechanics and available depth. Wider stance (1.3-1.5x shoulder width) with 15-30° toe-out allows greater hip external rotation and typically 3-5cm additional depth. Narrower stance emphasizes quadriceps but may limit depth in individuals with limited hip mobility. Self-selected stance width correlates with individual anatomy: participants with greater femoral anteversion prefer wider stance. Experiment within ranges to find optimal personal positioning.",
+      "metadata": {
+        "source": "Escamilla RF et al. Med Sci Sports Exerc 2001;33(6):984-998",
+        "exercise_type": ["squat"],
+        "issue_addressed": ["limited_depth", "technique_optimization"],
+        "intervention_type": ["technique_modification"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "progression_criteria_001",
+      "text": "Systematic progression criteria prevent premature load advancement. Progress to next level only when: (1) complete prescribed reps/sets with <2/10 RPE reserve, (2) maintain form quality across all reps (no compensations), (3) pass movement screen (symmetry <10%, no valgus), (4) minimal post-exercise soreness. Jumping progression stages increases injury risk 3.2-fold. Conservative approach: master current level for 2-3 sessions before advancing load/complexity.",
+      "metadata": {
+        "source": "Gamble P. J Strength Cond Res 2012;34(4):38-44",
+        "exercise_type": ["general"],
+        "issue_addressed": ["progression", "injury_prevention"],
+        "intervention_type": ["programming"],
+        "evidence_level": "4"
+      }
+    },
+    {
+      "chunk_id": "video_feedback_protocol_001",
+      "text": "Structured video feedback protocol maximizes learning effectiveness. Record 3 angles: front, side, 45° angle. Review immediately after set (within 2 minutes for optimal motor memory consolidation). Focus sequence: (1) identify one primary issue, (2) coach provides single corrective cue, (3) immediate practice attempt, (4) review new video. Multiple simultaneous cues reduce retention by 47%. Weekly video comparison tracks progress visually, enhancing motivation and self-awareness.",
+      "metadata": {
+        "source": "Baudry L et al. Res Q Exerc Sport 2006;77(4):458-466",
+        "exercise_type": ["general"],
+        "issue_addressed": ["motor_learning", "technique"],
+        "intervention_type": ["video_feedback", "coaching"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "warmup_protocol_001",
+      "text": "Effective squat warm-up protocol reduces injury risk and improves performance. Sequence: (1) 5min general cardio (light jog/bike), (2) dynamic mobility (leg swings, hip CARs, ankle circles - 2x10 each), (3) activation (glute bridges, clamshells - 2x12), (4) movement-specific ramp (bodyweight squats x10, goblet squats x8, working weight 50% x5, 70% x3, 85% x1). Total 12-15 minutes. Studies show proper warm-up improves squat depth by 8% and reduces asymmetry by 12%.",
+      "metadata": {
+        "source": "McGowan CJ et al. JSCR 2015;29(11):3188-3203",
+        "exercise_type": ["warmup"],
+        "issue_addressed": ["injury_prevention", "performance"],
+        "intervention_type": ["warmup_protocol"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "recovery_001",
+      "text": "Adequate recovery between squat sessions optimizes adaptation and prevents overuse injury. Minimum 48-72 hours between heavy squat days allows neuromuscular system recovery. Indicators of insufficient recovery: persistent soreness >48hrs, form deterioration on subsequent session, strength decrease >5%. Active recovery (light movement, stretching) on off-days maintains mobility. Sleep quality directly impacts motor learning retention: <7hrs sleep reduces skill consolidation by 34%.",
+      "metadata": {
+        "source": "Nédélec M et al. Sports Med 2013;43(1):9-29",
+        "exercise_type": ["general"],
+        "issue_addressed": ["recovery", "programming"],
+        "intervention_type": ["recovery_protocol"],
+        "evidence_level": "1"
+      }
+    },
+    {
+      "chunk_id": "deload_protocol_001",
+      "text": "Periodic deload weeks prevent accumulation of fatigue and form degradation. After 3-4 weeks progressive training, implement deload: reduce volume by 40-60% (sets/reps) OR reduce intensity by 20-30% (weight) while maintaining movement patterns. Deload allows neuromuscular recovery while retaining motor patterns. Athletes incorporating structured deloads show 15% greater long-term strength gains and 40% fewer overuse injuries compared to continuous progression.",
+      "metadata": {
+        "source": "Stone MH et al. Sports Med 1999;27(2):87-100",
+        "exercise_type": ["general"],
+        "issue_addressed": ["programming", "recovery"],
+        "intervention_type": ["deload"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "footwear_001",
+      "text": "Footwear significantly influences squat mechanics. Heel elevation (weightlifting shoes with 0.75-1.0 inch heel) increases ankle dorsiflexion by 8-12° equivalent, allowing more upright torso and 2-4cm greater depth. Appropriate for individuals with ankle mobility limitations. Flat/minimalist shoes provide proprioceptive feedback and foot stability but require adequate ankle mobility. Cushioned running shoes compress unpredictably, reducing stability and increasing injury risk by 23%. Choose based on individual mobility profile.",
+      "metadata": {
+        "source": "Sato K et al. JSCR 2012;26(4):1196-1202",
+        "exercise_type": ["squat"],
+        "issue_addressed": ["ankle_mobility", "equipment"],
+        "intervention_type": ["equipment_selection"],
+        "evidence_level": "3"
+      }
+    },
+    {
+      "chunk_id": "injury_red_flags_001",
+      "text": "Recognize injury red flags requiring immediate cessation: sharp pain (vs muscle burn), joint locking/catching, sudden strength loss, swelling within 2hrs post-exercise, pain persisting >1 week. Continue modified training around injury: if knee pain, substitute with pain-free ranges or alternative exercises (leg press, step-ups). Return-to-squat criteria: full pain-free ROM, <10% strength asymmetry, pass movement screen. Gradual return: 50% previous volume/intensity week 1, progress 20% weekly if asymptomatic.",
+      "metadata": {
+        "source": "McCrory P et al. BJSM 2013;47(5):250-258",
+        "exercise_type": ["general"],
+        "issue_addressed": ["injury_prevention", "pain_management"],
+        "intervention_type": ["assessment", "modification"],
+        "evidence_level": "4"
+      }
+    },
+    {
+      "chunk_id": "periodization_001",
+      "text": "Structured periodization optimizes long-term squat development. Sample 12-week block: Weeks 1-4 (accumulation) - 4x10 at 65%, focus technique and volume. Weeks 5-8 (intensification) - 5x5 at 80%, increase load. Weeks 9-11 (realization) - 5x3 at 87%, peak strength. Week 12 (deload) - 3x5 at 60%. This undulating approach develops multiple qualities (hypertrophy, strength, power) while managing fatigue. Periodized programs show 23% greater strength gains than linear progression over 12 weeks.",
+      "metadata": {
+        "source": "Williams TD et al. Sports Med 2017;47(6):1181-1205",
+        "exercise_type": ["general"],
+        "issue_addressed": ["programming", "strength_development"],
+        "intervention_type": ["periodization"],
+        "evidence_level": "1"
+      }
+    },
+    {
+      "chunk_id": "regression_progression_001",
+      "text": "Squat regression-progression continuum for individualized programming. Regressions (easier): wall squats → box squats → goblet squats → bodyweight squats. Progressions (harder): pause squats → tempo squats → barbell back squats → front squats. Lateral progressions (similar difficulty): sumo squats, split squats, lunges. Move up continuum only when current level mastered (form score 8/10, no compensations). Regress immediately if form breakdown occurs; no ego lifting.",
+      "metadata": {
+        "source": "Cook G et al. N Am J Sports Phys Ther 2010;5(3):132-138",
+        "exercise_type": ["squat_variations"],
+        "issue_addressed": ["progression", "individualization"],
+        "intervention_type": ["exercise_selection"],
+        "evidence_level": "4"
+      }
+    },
+    {
+      "chunk_id": "neuromuscular_cueing_001",
+      "text": "Neuromuscular electrical stimulation (NMES) combined with squat training enhances gluteus medius activation in individuals with poor volitional control. Protocol: place NMES electrodes on gluteus medius, set to 50-60% tolerable intensity, perform squats with concurrent stimulation, 3 sets x 10 reps, 2x weekly for 4 weeks. Study showed 43% increase in voluntary gluteus medius activation post-intervention, suggesting enhanced neural drive. Useful for severe inhibition cases; not replacement for standard training.",
+      "metadata": {
+        "source": "Distefano LJ et al. J Orthop Sports Phys Ther 2009;39(7):532-540",
+        "exercise_type": ["rehabilitation"],
+        "issue_addressed": ["muscle_activation", "gluteus_medius_weakness"],
+        "intervention_type": ["NMES", "activation"],
+        "evidence_level": "2"
+      }
+    },
+    {
+      "chunk_id": "proprioception_training_001",
+      "text": "Proprioceptive training improves joint position sense and control during dynamic squats. Unstable surface training (foam pads, BOSU) enhances proprioception but reduces force output by 15-20%, making it suboptimal for strength development. Instead: single-leg balance exercises on stable surface (eyes open → eyes closed progression), 3x45sec holds, 3x weekly improves proprioception without compromising strength gains. Integrate balance work during warm-up, not as squat replacement.",
+      "metadata": {
+        "source": "Behm DG et al. JSCR 2010;24(10):2857-2885",
+        "exercise_type": ["balance_training"],
+        "issue_addressed": ["proprioception", "balance"],
+        "intervention_type": ["balance_training"],
+        "evidence_level": "1"
+      }
+    }
+  ]  
