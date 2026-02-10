@@ -115,10 +115,11 @@ class HybridRetriever:
         Args:
             query: Natural language query string.
             exercise_type: Optional filter for exercise_type metadata field.
-                          Filters using "$contains" operator to match comma-separated values.
+                          Matches values in comma-separated strings (e.g., "squat" matches "squat, lunge").
             issue_type: Optional filter for issue_addressed metadata field.
-                       Filters using "$contains" operator to match comma-separated values.
+                       Matches values in comma-separated strings (e.g., "asymmetry" matches "asymmetry, motor_control").
             n_results: Number of results to return. Defaults to 5.
+                       When filters are applied, retrieves more candidates and filters in Python.
         
         Returns:
             List of result dictionaries, sorted by relevance_score (highest first).
@@ -144,30 +145,61 @@ class HybridRetriever:
             query_embedding = self.embedder.embed_query(query)
             logger.debug(f"Query embedding generated: shape {query_embedding.shape}")
             
-            # Build metadata filter
-            where_filter = None
-            if exercise_type or issue_type:
-                where_filter = {}
-                
-                if exercise_type:
-                    # Use $contains to match values in comma-separated strings
-                    where_filter["exercise_type"] = {"$contains": exercise_type}
-                    logger.debug(f"Filtering by exercise_type: {exercise_type}")
-                
-                if issue_type:
-                    # Use $contains to match values in comma-separated strings
-                    where_filter["issue_addressed"] = {"$contains": issue_type}
-                    logger.debug(f"Filtering by issue_addressed: {issue_type}")
+            # If filters are applied, retrieve more results to account for filtering
+            # ChromaDB doesn't support $contains, so we'll filter in Python
+            retrieve_count = n_results * 3 if (exercise_type or issue_type) else n_results
             
-            # Search vector store
+            # Search vector store (no where_filter since we'll filter in Python)
             raw_results = self.vector_store.search(
                 query_embedding=query_embedding,
-                n_results=n_results,
-                where_filter=where_filter
+                n_results=retrieve_count,
+                where_filter=None
             )
             
             # Format results
             formatted_results = self._format_results(raw_results)
+            initial_count = len(formatted_results)
+            
+            # Apply metadata filters if specified
+            if exercise_type or issue_type:
+                filtered_results = []
+                for result in formatted_results:
+                    metadata = result.get('metadata', {})
+                    match = True
+                    
+                    if exercise_type:
+                        # Check if exercise_type contains the filter value
+                        exercise_type_value = metadata.get('exercise_type', '')
+                        if isinstance(exercise_type_value, str):
+                            # Check if filter value is in the comma-separated string
+                            exercise_types = [e.strip().lower() for e in exercise_type_value.split(',')]
+                            if exercise_type.lower() not in exercise_types:
+                                match = False
+                        else:
+                            match = False
+                    
+                    if issue_type and match:
+                        # Check if issue_addressed contains the filter value
+                        issue_value = metadata.get('issue_addressed', '')
+                        if isinstance(issue_value, str):
+                            # Check if filter value is in the comma-separated string
+                            issues = [i.strip().lower() for i in issue_value.split(',')]
+                            if issue_type.lower() not in issues:
+                                match = False
+                        else:
+                            match = False
+                    
+                    if match:
+                        filtered_results.append(result)
+                
+                # Limit to n_results after filtering
+                formatted_results = filtered_results[:n_results]
+                
+                if exercise_type:
+                    logger.debug(f"Filtered by exercise_type: {exercise_type}")
+                if issue_type:
+                    logger.debug(f"Filtered by issue_addressed: {issue_type}")
+                logger.debug(f"Filtered from {initial_count} to {len(formatted_results)} results")
             
             logger.info(f"Found {len(formatted_results)} results")
             return formatted_results
