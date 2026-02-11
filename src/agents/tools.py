@@ -39,30 +39,16 @@ def initialize_tools(retriever: HybridRetriever, pose_detector: PoseDetector = N
     logger.info("Agent tools initialized")
 
 
-@tool
-def get_biomechanics_analysis(video_path: str, exercise_type: str = "squat") -> Dict[str, Any]:
+def _get_biomechanics_analysis_impl(video_path: str, exercise_type: str = "squat") -> Dict[str, Any]:
     """
-    Analyze exercise video and return biomechanics report with detected issues.
-    
-    This tool processes a video file using pose estimation to detect movement quality issues
-    like asymmetry, knee valgus, forward lean, and depth limitations.
+    Implementation function for biomechanics analysis (testable directly).
     
     Args:
         video_path: Path to video file (mp4, avi, mov)
         exercise_type: Type of exercise being performed (currently supports "squat")
         
     Returns:
-        Dict containing:
-        - exercise: Exercise type
-        - duration_sec: Video duration
-        - issues: List of detected issues with severity, frames, timestamps
-        - metrics: Biomechanics measurements (angles, ROM, asymmetry)
-        - quality_score: Overall form quality (0-10)
-        
-    Example:
-        >>> result = get_biomechanics_analysis("squat_video.mp4", "squat")
-        >>> print(result['issues'])
-        {'type': 'asymmetry', 'severity': 'moderate', 'magnitude_degrees': 13, ...}
+        Dict containing analysis results with exercise, duration, issues, metrics, and quality_score.
     """
     if _pose_detector is None:
         return {"error": "Tools not initialized. Call initialize_tools() first."}
@@ -97,6 +83,71 @@ def get_biomechanics_analysis(video_path: str, exercise_type: str = "squat") -> 
     except Exception as e:
         logger.error(f"Biomechanics analysis error: {e}")
         return {"error": str(e)}
+
+
+@tool
+def get_biomechanics_analysis(video_path: str, exercise_type: str = "squat") -> Dict[str, Any]:
+    """
+    Analyze exercise video and return biomechanics report with detected issues.
+    
+    This tool processes a video file using pose estimation to detect movement quality issues
+    like asymmetry, knee valgus, forward lean, and depth limitations.
+    
+    Args:
+        video_path: Path to video file (mp4, avi, mov)
+        exercise_type: Type of exercise being performed (currently supports "squat")
+        
+    Returns:
+        Dict containing:
+        - exercise: Exercise type
+        - duration_sec: Video duration
+        - issues: List of detected issues with severity, frames, timestamps
+        - metrics: Biomechanics measurements (angles, ROM, asymmetry)
+        - quality_score: Overall form quality (0-10)
+        
+    Example:
+        >>> result = get_biomechanics_analysis("squat_video.mp4", "squat")
+        >>> print(result['issues'])
+        {'type': 'asymmetry', 'severity': 'moderate', 'magnitude_degrees': 13, ...}
+    """
+    return _get_biomechanics_analysis_impl(video_path, exercise_type)
+
+
+def _search_exercise_literature_impl(
+    query: str, 
+    exercise_type: Optional[str] = None,
+    issue_type: Optional[str] = None,
+    n_results: int = 5
+) -> List[Dict[str, Any]]:
+    """
+    Implementation function for literature search (testable directly).
+    
+    Args:
+        query: Search query describing the issue or desired intervention
+        exercise_type: Filter by exercise (e.g., "squat", "lunge")
+        issue_type: Filter by issue addressed (e.g., "asymmetry", "knee_valgus")
+        n_results: Number of results to return (default: 5)
+        
+    Returns:
+        List of dicts containing search results with chunk_id, text, metadata, and relevance_score.
+    """
+    if _retriever is None:
+        return [{"error": "Tools not initialized. Call initialize_tools() first."}]
+    
+    try:
+        results = _retriever.search(
+            query=query,
+            exercise_type=exercise_type,
+            issue_type=issue_type,
+            n_results=n_results
+        )
+        
+        logger.info(f"Literature search: '{query}' returned {len(results)} results")
+        return results
+        
+    except Exception as e:
+        logger.error(f"Literature search error: {e}")
+        return [{"error": str(e)}]
 
 
 @tool
@@ -135,29 +186,12 @@ def search_exercise_literature(
         >>> print(results[0]['metadata']['source'])
         'Bishop C et al. IJSPP 2018;13(4):545-547'
     """
-    if _retriever is None:
-        return [{"error": "Tools not initialized. Call initialize_tools() first."}]
-    
-    try:
-        results = _retriever.search(
-            query=query,
-            exercise_type=exercise_type,
-            issue_type=issue_type,
-            n_results=n_results
-        )
-        
-        logger.info(f"Literature search: '{query}' returned {len(results)} results")
-        return results
-        
-    except Exception as e:
-        logger.error(f"Literature search error: {e}")
-        return [{"error": str(e)}]
+    return _search_exercise_literature_impl(query, exercise_type, issue_type, n_results)
 
 
-@tool
-def compare_to_normative_data(angle_data: Dict[str, float], exercise_type: str = "squat") -> Dict[str, str]:
+def _compare_to_normative_data_impl(angle_data: Dict[str, float], exercise_type: str = "squat") -> Dict[str, str]:
     """
-    Compare biomechanics measurements to normative reference values.
+    Implementation function for normative data comparison (testable directly).
     
     Args:
         angle_data: Dict with measured angles (e.g., {'knee_flexion_left': 105, 'knee_flexion_right': 118})
@@ -165,11 +199,6 @@ def compare_to_normative_data(angle_data: Dict[str, float], exercise_type: str =
         
     Returns:
         Dict with comparison statements for each metric
-        
-    Example:
-        >>> result = compare_to_normative_data({'knee_flexion_left': 105, 'knee_flexion_right': 118})
-        >>> print(result['knee_flexion_asymmetry'])
-        '13° asymmetry detected (normal: <5°, moderate: 10-15°)'
     """
     # Load normative data
     norms_path = Path(__file__).parent.parent.parent / "data" / "reference" / "exercise_norms.json"
@@ -217,6 +246,29 @@ def compare_to_normative_data(angle_data: Dict[str, float], exercise_type: str =
     except Exception as e:
         logger.error(f"Comparison error: {e}")
         return {"error": str(e)}
+
+
+@tool
+def compare_to_normative_data(angle_data: Dict[str, float], exercise_type: str = "squat") -> Dict[str, str]:
+    """
+    Compare biomechanics measurements to normative reference values.
+    
+    This tool compares measured angles to normative data and identifies
+    asymmetries or deviations from normal ranges.
+    
+    Args:
+        angle_data: Dict with measured angles (e.g., {'knee_flexion_left': 105, 'knee_flexion_right': 118})
+        exercise_type: Exercise being analyzed (default: squat)
+        
+    Returns:
+        Dict with comparison statements for each metric
+        
+    Example:
+        >>> result = compare_to_normative_data({'knee_flexion_left': 105, 'knee_flexion_right': 118})
+        >>> print(result['knee_flexion_asymmetry'])
+        '13° asymmetry detected (normal: <5°, moderate: 10-15°)'
+    """
+    return _compare_to_normative_data_impl(angle_data, exercise_type)
 
 
 # Export tool list for LangChain agent
