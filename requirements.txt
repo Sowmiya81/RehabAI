@@ -35,3 +35,6 @@ tqdm>=4.66.1
 
 # Testing
 pytest>=7.4.3
+
+# LLM
+google-generativeai>=0.3.0
