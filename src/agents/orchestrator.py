@@ -29,36 +29,6 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# Phoenix tracing (optional)
-PHOENIX_ENABLED = False
-
-try:
-    import phoenix as px
-    from openinference.instrumentation.langchain import LangChainInstrumentor
-    from phoenix.otel import register
-    
-    try:
-        tracer_provider = register(
-            project_name="rehabai-agent",
-            endpoint="http://localhost:6006/v1/traces"
-        )
-        LangChainInstrumentor().instrument(tracer_provider=tracer_provider)
-        PHOENIX_ENABLED = True
-        logger.info("✅ Phoenix enabled: http://localhost:6006")
-    except Exception as e:
-        logger.info(f"Phoenix server not running: {e}")
-        
-except ImportError as e:
-    logger.info(f"Phoenix not installed: pip install setuptools arize-phoenix")
-
-# Mock Phoenix if not available
-if not PHOENIX_ENABLED:
-    class MockPhoenix:
-        @staticmethod
-        def using_attributes(**kwargs):
-            return nullcontext()
-    px = MockPhoenix()
-
 
 class AgentState(TypedDict):
     """State flowing through agent graph."""
@@ -187,31 +157,26 @@ class RehabCoachAgent:
         logger.info(f"REASONING NODE - Step {current_step}/{self.max_steps}")
         logger.info("="*70)
         
-        with px.using_attributes(
-            span_kind="AGENT",
-            step=current_step,
-            max_steps=self.max_steps
-        ):
             
-            if current_step > self.max_steps:
-                logger.warning(f"Max steps reached, forcing completion")
-                return {
-                    "current_step": current_step,
-                    "next_action": "generate_coaching",
-                    "agent_finished": True,
-                    "messages": ["Max steps reached"]
-                }
-            
-            has_biomechanics = state.get('biomechanics') is not None
-            has_evidence = len(state.get('evidence', [])) > 0
-            has_coaching = state.get('coaching_plan') is not None
-            
-            logger.info(f"Current state:")
-            logger.info(f"  - Biomechanics analyzed: {has_biomechanics}")
-            logger.info(f"  - Evidence collected: {has_evidence} ({len(state.get('evidence', []))} chunks)")
-            logger.info(f"  - Coaching generated: {has_coaching}")
-            
-            prompt = f"""
+        if current_step > self.max_steps:
+            logger.warning(f"Max steps reached, forcing completion")
+            return {
+                "current_step": current_step,
+                "next_action": "generate_coaching",
+                "agent_finished": True,
+                "messages": ["Max steps reached"]
+            }
+        
+        has_biomechanics = state.get('biomechanics') is not None
+        has_evidence = len(state.get('evidence', [])) > 0
+        has_coaching = state.get('coaching_plan') is not None
+        
+        logger.info(f"Current state:")
+        logger.info(f"  - Biomechanics analyzed: {has_biomechanics}")
+        logger.info(f"  - Evidence collected: {has_evidence} ({len(state.get('evidence', []))} chunks)")
+        logger.info(f"  - Coaching generated: {has_coaching}")
+        
+        prompt = f"""
 You are a fitness coaching AI agent. Analyze current state and decide next action.
 
 CURRENT STATE:
@@ -232,69 +197,69 @@ GUIDELINES:
 
 Output ONLY this JSON:
 {{
-  "reasoning": "one sentence explaining decision",
-  "action": "action_name",
-  "finished": true/false
+"reasoning": "one sentence explaining decision",
+"action": "action_name",
+"finished": true/false
 }}
 """
+        
+        try:
+            logger.info("Calling Gemini for reasoning...")
             
-            try:
-                logger.info("Calling Gemini for reasoning...")
-                
-                # FIXED: Correct API syntax for google-genai v1.60+
-                response = self.client.models.generate_content(
-                    model=self.model,
-                    contents=prompt,
-                    config={
-                        "temperature": self.temperature,
-                        "max_output_tokens": 2048,
-                    }
-                )
-                response_text = response.text.strip()
-                
-                logger.info(f"Gemini response: {response_text[:200]}")
-                
-                # Parse JSON
-                if "```json" in response_text:
-                    json_str = response_text.split("```json")[1].split("```")[0].strip()
-                elif "```" in response_text:
-                    json_str = response_text.split("```").split("```").strip()[1]
-                else:
-                    json_str = response_text
-                
-                decision = json.loads(json_str)
-                
-                logger.info(f"Decision: {decision['action']}")
-                logger.info(f"Reasoning: {decision['reasoning']}")
-                logger.info("="*70)
-                
-                return {
-                    "current_step": current_step,
-                    "next_action": decision['action'],
-                    "agent_finished": decision.get('finished', False),
-                    "messages": [f"Step {current_step}: {decision['reasoning']}"]
+            # FIXED: Correct API syntax for google-genai v1.60+
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config={
+                    "temperature": self.temperature,
+                    "max_output_tokens": 2048,
                 }
-                
-            except Exception as e:
-                logger.error(f"Reasoning error: {e}", exc_info=True)
-                logger.warning("Using fallback logic")
-                
-                if not has_biomechanics:
-                    action = "analyze_video"
-                elif not has_evidence:
-                    action = "search_literature"
-                else:
-                    action = "generate_coaching"
-                
-                logger.info(f"Fallback action: {action}")
-                logger.info("="*70)
-                
-                return {
-                    "current_step": current_step,
-                    "next_action": action,
-                    "agent_finished": False,
-                    "messages": [f"Step {current_step}: Fallback to {action}"]
-                }
+            )
+            response_text = response.text.strip()
+            
+            logger.info(f"Gemini response: {response_text[:200]}")
+            
+            # Parse JSON
+            if "```json" in response_text:
+                json_str = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                json_str = response_text.split("```").split("```").strip()[1]
+            else:
+                json_str = response_text
+            
+            decision = json.loads(json_str)
+            
+            logger.info(f"Decision: {decision['action']}")
+            logger.info(f"Reasoning: {decision['reasoning']}")
+            logger.info("="*70)
+            
+            return {
+                "current_step": current_step,
+                "next_action": decision['action'],
+                "agent_finished": decision.get('finished', False),
+                "messages": [f"Step {current_step}: {decision['reasoning']}"]
+            }
+            
+        except Exception as e:
+            logger.error(f"Reasoning error: {e}", exc_info=True)
+            logger.warning("Using fallback logic")
+            
+            if not has_biomechanics:
+                action = "analyze_video"
+            elif not has_evidence:
+                action = "search_literature"
+            else:
+                action = "generate_coaching"
+            
+            logger.info(f"Fallback action: {action}")
+            logger.info("="*70)
+            
+            return {
+                "current_step": current_step,
+                "next_action": action,
+                "agent_finished": False,
+                "messages": [f"Step {current_step}: Fallback to {action}"]
+            }
     
     def _analyze_video_node(self, state: AgentState) -> dict:
         """Execute CV analysis."""
@@ -305,62 +270,57 @@ Output ONLY this JSON:
         logger.info("ANALYZE VIDEO NODE")
         logger.info("="*70)
         
-        with px.using_attributes(
-            span_kind="TOOL",
-            tool_name="get_biomechanics_analysis",
-            video_path=video_path
-        ):
-            logger.info(f"Analyzing: {video_path}")
+        logger.info(f"Analyzing: {video_path}")
+        
+        try:
+            biomechanics = _get_biomechanics_analysis_impl(video_path, "squat")
             
-            try:
-                biomechanics = _get_biomechanics_analysis_impl(video_path, "squat")
-                
-                logger.info("FULL BIOMECHANICS OUTPUT:")
-                logger.info(json.dumps(biomechanics, indent=2, default=str))
-                
-                # Check for initialization error
-                if "error" in biomechanics:
-                    logger.error(f"Biomechanics error: {biomechanics['error']}")
-                    logger.error("Tools may not be initialized properly")
-                
-                issues = biomechanics.get('issues', [])
-                metrics = biomechanics.get('metrics', {})
-                
-                logger.info(f"Issues found: {len(issues)}")
-                logger.info(f"Metrics: {list(metrics.keys())}")
-                
-                # Check asymmetry
-                if 'asymmetry_score' in metrics:
-                    logger.info(f"Asymmetry score: {metrics['asymmetry_score']}")
-                    if len(issues) == 0 and metrics['asymmetry_score'] > 0:
-                        logger.warning("⚠️ ASYMMETRY DETECTED BUT NO ISSUES!")
-                        logger.warning("Check biomechanics.py thresholds")
-                
-                # Generate queries
-                queries = []
-                if issues:
-                    for issue in issues[:2]:
-                        queries.append(f"{issue.get('type', 'movement')} correction squat")
-                else:
-                    queries = ["squat form optimization", "squat mobility"]
-                
-                logger.info(f"Generated queries: {queries}")
-                logger.info("="*70)
-                
-                return {
-                    "biomechanics": biomechanics,
-                    "search_queries": queries,
-                    "messages": [f"Analyzed video: {len(issues)} issues"]
-                }
-                
-            except Exception as e:
-                logger.error(f"Video analysis error: {e}", exc_info=True)
-                logger.error("="*70)
-                return {
-                    "biomechanics": {"error": str(e), "issues": []},
-                    "search_queries": ["squat general"],
-                    "messages": [f"Analysis failed: {e}"]
-                }
+            logger.info("FULL BIOMECHANICS OUTPUT:")
+            logger.info(json.dumps(biomechanics, indent=2, default=str))
+            
+            # Check for initialization error
+            if "error" in biomechanics:
+                logger.error(f"Biomechanics error: {biomechanics['error']}")
+                logger.error("Tools may not be initialized properly")
+            
+            issues = biomechanics.get('issues', [])
+            metrics = biomechanics.get('metrics', {})
+            
+            logger.info(f"Issues found: {len(issues)}")
+            logger.info(f"Metrics: {list(metrics.keys())}")
+            
+            # Check asymmetry
+            if 'asymmetry_score' in metrics:
+                logger.info(f"Asymmetry score: {metrics['asymmetry_score']}")
+                if len(issues) == 0 and metrics['asymmetry_score'] > 0:
+                    logger.warning("⚠️ ASYMMETRY DETECTED BUT NO ISSUES!")
+                    logger.warning("Check biomechanics.py thresholds")
+            
+            # Generate queries
+            queries = []
+            if issues:
+                for issue in issues[:2]:
+                    queries.append(f"{issue.get('type', 'movement')} correction squat")
+            else:
+                queries = ["squat form optimization", "squat mobility"]
+            
+            logger.info(f"Generated queries: {queries}")
+            logger.info("="*70)
+            
+            return {
+                "biomechanics": biomechanics,
+                "search_queries": queries,
+                "messages": [f"Analyzed video: {len(issues)} issues"]
+            }
+            
+        except Exception as e:
+            logger.error(f"Video analysis error: {e}", exc_info=True)
+            logger.error("="*70)
+            return {
+                "biomechanics": {"error": str(e), "issues": []},
+                "search_queries": ["squat general"],
+                "messages": [f"Analysis failed: {e}"]
+            }
     
     def _search_literature_node(self, state: AgentState) -> dict:
         """Execute RAG search."""
@@ -371,34 +331,33 @@ Output ONLY this JSON:
         logger.info("SEARCH LITERATURE NODE")
         logger.info("="*70)
         
-        with px.using_attributes(span_kind="RETRIEVER", queries=queries):
-            logger.info(f"Queries: {queries}")
-            
-            all_evidence = []
-            
-            for i, query in enumerate(queries[:2], 1):
-                try:
-                    logger.info(f"Query {i}: '{query}'")
-                    
-                    results = _search_exercise_literature_impl(
-                        query=query,
-                        exercise_type="squat",
-                        issue_type=None,
-                        n_results=3
-                    )
-                    
-                    logger.info(f"  Retrieved {len(results)} results")
-                    
-                    for j, r in enumerate(results, 1):
-                        chunk_id = r.get('chunk_id', 'None')
-                        score = r.get('relevance_score', 0)
-                        logger.info(f"    [{j}] chunk_id={chunk_id}, score={score:.3f}")
-                    
-                    all_evidence.extend(results)
-                    
-                except Exception as e:
-                    logger.error(f"Search error: {e}", exc_info=True)
-            
+        logger.info(f"Queries: {queries}")
+        
+        all_evidence = []
+        
+        for i, query in enumerate(queries[:2], 1):
+            try:
+                logger.info(f"Query {i}: '{query}'")
+                
+                results = _search_exercise_literature_impl(
+                    query=query,
+                    exercise_type="squat",
+                    issue_type=None,
+                    n_results=3
+                )
+                
+                logger.info(f"  Retrieved {len(results)} results")
+                
+                for j, r in enumerate(results, 1):
+                    chunk_id = r.get('chunk_id', 'None')
+                    score = r.get('relevance_score', 0)
+                    logger.info(f"    [{j}] chunk_id={chunk_id}, score={score:.3f}")
+                
+                all_evidence.extend(results)
+                
+            except Exception as e:
+                logger.error(f"Search error: {e}", exc_info=True)
+        
             # Deduplicate
             seen = set()
             unique = []
@@ -446,13 +405,8 @@ Output ONLY this JSON:
         
         biomechanics = state.get('biomechanics', {})
         evidence = state.get('evidence', [])
-        
-        with px.using_attributes(
-            span_kind="LLM",
-            evidence_count=len(evidence)
-        ):
             
-            prompt = f"""
+        prompt = f"""
 You are an expert fitness coach. Create a coaching plan.
 
 BIOMECHANICS:
@@ -468,36 +422,36 @@ Create a brief coaching plan in Markdown with:
 
 Keep it concise.
 """
+        
+        try:
+            # FIXED: Correct API syntax
+            response = self.client.models.generate_content(
+                model=self.model,
+                contents=prompt,
+                config={
+                    "temperature": self.temperature,
+                    "max_output_tokens": 2048,
+                }
+            )
             
-            try:
-                # FIXED: Correct API syntax
-                response = self.client.models.generate_content(
-                    model=self.model,
-                    contents=prompt,
-                    config={
-                        "temperature": self.temperature,
-                        "max_output_tokens": 2048,
-                    }
-                )
-                
-                plan = response.text
-                logger.info(f"Generated {len(plan)} chars")
-                logger.info("="*70)
-                
-                return {
-                    "coaching_plan": plan,
-                    "agent_finished": True,
-                    "messages": ["Coaching generated"]
-                }
-                
-            except Exception as e:
-                logger.error(f"Generation error: {e}", exc_info=True)
-                logger.error("="*70)
-                return {
-                    "coaching_plan": f"Error: {e}",
-                    "agent_finished": True,
-                    "messages": [f"Failed: {e}"]
-                }
+            plan = response.text
+            logger.info(f"Generated {len(plan)} chars")
+            logger.info("="*70)
+            
+            return {
+                "coaching_plan": plan,
+                "agent_finished": True,
+                "messages": ["Coaching generated"]
+            }
+            
+        except Exception as e:
+            logger.error(f"Generation error: {e}", exc_info=True)
+            logger.error("="*70)
+            return {
+                "coaching_plan": f"Error: {e}",
+                "agent_finished": True,
+                "messages": [f"Failed: {e}"]
+            }
     
     def _route_next_action(self, state: AgentState) -> str:
         """Route based on next_action."""
