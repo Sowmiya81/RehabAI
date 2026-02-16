@@ -7,6 +7,13 @@ __pycache__/
 venv/
 env/
 
+# Test videos (personal/sensitive)
+tests/fixtures/golden_videos/*.mp4
+tests/fixtures/golden_videos/*.avi
+tests/fixtures/golden_videos/*.mov
+
+!tests/fixtures/golden_outputs/
+
 # Data files
 data/videos/
 outputs/
