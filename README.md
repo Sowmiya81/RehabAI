@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![RehabAI Banner](docs/images/ui_home.jpg)
+![RehabAI Banner](docs/images/ui_home.png)
 
 **AI-powered squat analysis using Computer Vision, RAG, and LLM-based coaching**
 
@@ -29,11 +29,11 @@ RehabAI analyzes your squat form and provides personalized coaching backed by re
 
 | Home Interface | Analysis Results (Good Form) |
 |:--------------:|:----------------------------:|
-| ![Home](docs/images/ui_home.jpg) | ![Good](docs/images/good_results.jpg) |
+| ![Home](docs/images/ui_home.png) | ![Good](docs/images/good_results.png) |
 
 | Analysis Results (Issues Detected) | AI Coaching Plan |
 |:----------------------------------:|:----------------:|
-| ![Bad](docs/images/bad_results.jpg) | ![Coaching](docs/images/coaching_plan.jpg) |
+| ![Bad](docs/images/bad_results.png) | ![Coaching](docs/images/coaching_plan.png) |
 
 ---
 
@@ -72,7 +72,7 @@ Metrics  Evidence      Plan
 
 ```bash
 # Clone and setup
-git clone https://github.com/yourusername/RehabAI.git
+git clone https://github.com/Sowmiya81/RehabAI.git
 cd RehabAI
 python -m venv venv
 source venv/bin/activate  # Windows: venv\Scripts\activate
@@ -192,20 +192,12 @@ pytest tests/evaluation/test_custom_eval.py -v
 - Context Quality: 7+/10
 - Safety: PASS
 
-**Why Custom Evaluation?**
-- Faster: 1 API call per test (vs 20+ for DeepEval)
-- Cost-effective: Works within Gemini free tier
-- Transparent: Clear scoring with interpretable results
-
 ---
 
 ## 🔮 Future Work
 
-- Support more exercises (deadlift, lunge, overhead press)
 - Multi-angle analysis
 - Real-time webcam feedback with live corrections
-- Progress tracking dashboard over time
-- PDF report export with visualizations
 
 ---
 
@@ -223,8 +215,8 @@ MIT License - See [LICENSE](LICENSE)
 
 <div align="center">
 
-Made with ❤️ by [Your Name]
+Made with ❤️ by Sowmiya
 
-[GitHub](https://github.com/yourusername/RehabAI) • [LinkedIn](https://linkedin.com/in/yourprofile)
+[GitHub](https://github.com/Sowmiya81/RehabAI) • [LinkedIn](https://linkedin.com/in/https://www.linkedin.com/in/sowmiyalakshmiganesh/)
 
 </div>
