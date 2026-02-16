@@ -1,0 +1,8 @@
+{
+  "video_path": "tests/fixtures/golden_videos/squat_asymmetry.mp4",
+  "note": "Video file not included in repository. Use your own squat video for testing.",
+  "ground_truth_answer": "The athlete exhibits severe bilateral asymmetries in both knee (26.6° difference) and hip (29.9° difference) angles, with the right side achieving significantly greater flexion than the left. This requires unilateral corrective exercises focusing on left-side mobility and strength, motor control drills for symmetry, and injury risk mitigation strategies.",
+  "expected_issues": ["asymmetry"],
+  "expected_corrections": ["unilateral strength", "mobility work", "motor control"]
+}
+
