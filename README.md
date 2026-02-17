@@ -1,4 +1,4 @@
-# 🏋️ RehabAI - AI Movement Analysis Coach
+# RehabAI - AI Movement Analysis Coach
 
 <div align="center">
 
@@ -14,7 +14,7 @@
 
 ---
 
-## 🎯 What It Does
+## What It Does
 
 RehabAI analyzes your squat form and provides personalized coaching backed by research literature. Upload a video → Get instant biomechanics analysis → Receive evidence-based corrective exercises.
 
@@ -25,7 +25,7 @@ RehabAI analyzes your squat form and provides personalized coaching backed by re
 
 ---
 
-## 🖼️ Screenshots
+## Screenshots
 
 | Home Interface | Analysis Results (Good Form) |
 |:--------------:|:----------------------------:|
@@ -37,7 +37,7 @@ RehabAI analyzes your squat form and provides personalized coaching backed by re
 
 ---
 
-## 🏗️ Architecture
+## Architecture
 
 **System Flow:**
 ```
@@ -66,7 +66,7 @@ Metrics  Evidence      Plan
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Installation
 
@@ -104,7 +104,7 @@ Navigate to `http://localhost:7860`
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 RehabAI/
@@ -142,7 +142,7 @@ RehabAI/
 
 ---
 
-## 🔬 Key Features
+## Key Features
 
 ### Biomechanics Analysis
 - **Detects**: knee valgus, asymmetries, limited ROM
@@ -167,7 +167,7 @@ RehabAI/
 
 ---
 
-## 📊 Performance
+## Performance
 
 | Metric | Time |
 |--------|------|
@@ -178,7 +178,7 @@ RehabAI/
 
 ---
 
-## 🧪 Evaluation
+## Evaluation
 
 Custom LLM-based evaluation using Gemini as judge:
 
@@ -194,20 +194,20 @@ pytest tests/evaluation/test_custom_eval.py -v
 
 ---
 
-## 🔮 Future Work
+## Future Work
 
 - Multi-angle analysis
 - Real-time webcam feedback with live corrections
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 **Educational purposes only.** Not a replacement for professional medical advice. Consult a healthcare provider if you have injuries or medical conditions.
 
 ---
 
-## 📄 License
+## License
 
 MIT License - See [LICENSE](LICENSE)
 
