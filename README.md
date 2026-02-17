@@ -217,6 +217,6 @@ MIT License - See [LICENSE](LICENSE)
 
 Made with ❤️ by Sowmiya
 
-[GitHub](https://github.com/Sowmiya81/RehabAI) • [LinkedIn](https://linkedin.com/in/https://www.linkedin.com/in/sowmiyalakshmiganesh/)
+[GitHub](https://github.com/Sowmiya81/RehabAI) • [LinkedIn](https://www.linkedin.com/in/sowmiyalakshmiganesh/)
 
 </div>
