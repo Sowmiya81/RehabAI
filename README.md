@@ -1,3 +1,14 @@
+---
+title: RehabAI – Exercise Coach
+emoji: 🏋️
+colorFrom: blue
+colorTo: green
+sdk: gradio
+app_file: app.py
+pinned: false
+python_version: "3.10"
+---
+
 # RehabAI - AI Movement Analysis Coach
 
 <div align="center">
