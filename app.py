@@ -312,7 +312,7 @@ custom_css = """
 }
 """
 
-with gr.Blocks(theme=gr.themes.Soft(), css=custom_css, title="RehabAI") as demo:
+with gr.Blocks(title="RehabAI") as demo:
     
     gr.HTML("""
     <div style="text-align: center; padding: 30px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
@@ -455,8 +455,9 @@ if __name__ == "__main__":
     print("Starting Gradio interface...\n")
     
     demo.launch(
-        server_name="127.0.0.1",
+        server_name="0.0.0.0",
         server_port=7860,
-        share=False,
-        show_error=True
+        theme=gr.themes.Soft(),
+        css=custom_css,
+        ssr_mode=False
     )
