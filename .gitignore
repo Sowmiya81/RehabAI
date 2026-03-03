@@ -21,9 +21,6 @@ outputs/
 *.avi
 *.mov
 
-# Vector DB
-data/vector_db/
-
 # IDE
 .vscode/
 .idea/
