@@ -241,7 +241,7 @@ def export_results(biomech_data, coaching_plan, issues):
     return filepath
 
 
-def analyze_video_enhanced(video_file, progress=gr.Progress()):
+def analyze_video_enhanced(video_file, exercise_type, progress=gr.Progress()):
     """Enhanced analysis with progress tracking."""
     if video_file is None:
         return (
@@ -256,7 +256,7 @@ def analyze_video_enhanced(video_file, progress=gr.Progress()):
         print(f"Processing video: {video_file}")
         
         progress(0.2, desc="Running biomechanics analysis...")
-        result = agent.run(video_file)
+        result = agent.run(video_file, exercise_type=exercise_type)
         
         progress(0.8, desc="Generating coaching plan...")
         
@@ -345,9 +345,16 @@ with gr.Blocks(title="RehabAI") as demo:
     """)
     
     video_input = gr.Video(
-        label="Upload Your Squat Video",
+        label="Upload Your Exercise Video",
         sources=["upload", "webcam"],
         height=400
+    )
+    
+    exercise_dropdown = gr.Dropdown(
+        choices=["squat", "pull-up", "push-up", "situp"],
+        value="squat",
+        label="Exercise Type",
+        info="Select the exercise being performed in the video"
     )
     
     with gr.Row():
@@ -389,7 +396,7 @@ with gr.Blocks(title="RehabAI") as demo:
     
     analyze_btn.click(
         fn=analyze_video_enhanced,
-        inputs=[video_input],
+        inputs=[video_input, exercise_dropdown],
         outputs=[
             issues_output,
             metrics_output,

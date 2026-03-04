@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 # Import existing components
 from src.pose.detector import PoseDetector
-from src.pose.biomechanics import analyze_squat_form
+from src.pose.biomechanics import analyze_exercise_form
 from src.rag.retriever import HybridRetriever
 
 # Module-level instances (initialized once when imported)
@@ -61,7 +61,7 @@ def _get_biomechanics_analysis_impl(video_path: str, exercise_type: str = "squat
             return {"error": f"Failed to process video: {video_path}"}
         
         # Use existing biomechanics analysis
-        report = analyze_squat_form(keypoints)
+        report = analyze_exercise_form(keypoints, exercise_type)
         report['exercise'] = exercise_type
         
         # Calculate quality score based on issues
