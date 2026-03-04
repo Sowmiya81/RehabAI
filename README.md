@@ -94,8 +94,7 @@ echo "GEMINI_API_KEY=your_key_here" > .env
 python app.py
 ```
 
-Navigate to:  
-👉 http://localhost:7860
+Navigate to: http://localhost:7860
 
 ---
 
