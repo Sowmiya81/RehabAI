@@ -1,15 +1,4 @@
----
-title: RehabAI – Exercise Coach
-emoji: 🏋️
-colorFrom: blue
-colorTo: green
-sdk: gradio
-app_file: app.py
-pinned: false
-python_version: "3.10"
----
-
-# RehabAI - AI Movement Analysis Coach
+# 🏋️ RehabAI - AI Movement Analysis Coach
 
 <div align="center">
 
@@ -28,18 +17,21 @@ python_version: "3.10"
 
 ## 🔗 Live Demo
 
-**Try it here → https://huggingface.co/spaces/SowmiyaG/RehabAI**
+**Try it here →**  
+👉 https://huggingface.co/spaces/SowmiyaG/RehabAI
 
 ---
 
 ## What It Does
 
-RehabAI analyzes your squat form and provides personalized coaching backed by research literature. Upload a video → Get instant biomechanics analysis → Receive evidence-based corrective exercises.
+RehabAI analyzes your squat form and provides personalized coaching backed by research literature.
 
-**Core Pipeline:**
-1. **Computer Vision** (MediaPipe) detects pose and calculates joint angles
-2. **RAG System** (ChromaDB + Sentence Transformers) retrieves relevant research
-3. **LLM Agent** (Gemini 2.5 Flash + LangGraph) generates personalized coaching
+Upload a video → Get biomechanics analysis → Receive evidence-based corrective exercises.
+
+### Core Pipeline
+1. **Computer Vision** (MediaPipe) detects pose and calculates joint angles  
+2. **RAG System** (ChromaDB + Sentence Transformers) retrieves relevant research  
+3. **LLM Agent** (Gemini 2.5 Flash + LangGraph) generates personalized coaching  
 
 ---
 
@@ -57,35 +49,38 @@ RehabAI analyzes your squat form and provides personalized coaching backed by re
 
 ## Architecture
 
-**System Flow:**
+### System Flow
 
+```
 User Upload Video
-↓
-Gradio Web UI
-↓
-LangGraph Orchestrator
-(Agentic Reasoning Loop)
-↓
-┌───┴────┬─────────────┐
-↓ ↓ ↓
-MediaPipe ChromaDB Gemini 2.5
-Pose RAG Flash
-↓ ↓ ↓
-Biomech Research Coaching
-Metrics Evidence Plan
-
-text
-
-**Tech Stack:**
-- **CV**: MediaPipe Pose
-- **RAG**: ChromaDB + Sentence Transformers (all-MiniLM-L6-v2)
-- **LLM**: Google Gemini 2.5 Flash
-- **Orchestration**: LangGraph
-- **UI**: Gradio 6.x (Spaces)
+        ↓
+   Gradio Web UI
+        ↓
+ LangGraph Orchestrator
+ (Agentic Reasoning Loop)
+        ↓
+ ┌──────┴───────────┐
+ ↓      ↓          ↓
+MediaPipe  ChromaDB  Gemini 2.5
+ Pose       RAG        Flash
+ ↓          ↓          ↓
+Biomech   Research   Coaching
+Metrics    Evidence     Plan
+```
 
 ---
 
-## Quick Start
+### Tech Stack
+
+- **CV:** MediaPipe Pose  
+- **RAG:** ChromaDB + Sentence Transformers (`all-MiniLM-L6-v2`)  
+- **LLM:** Google Gemini 2.5 Flash  
+- **Orchestration:** LangGraph  
+- **UI:** Gradio 6.x (Hugging Face Spaces)  
+
+---
+
+## ⚡ Quick Start
 
 ### Installation
 
@@ -96,30 +91,33 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 echo "GEMINI_API_KEY=your_key_here" > .env
-Run
-bash
 python app.py
-Navigate to http://localhost:7860
+```
 
-Usage
-Upload squat video (or record via webcam)
+Navigate to:  
+👉 http://localhost:7860
 
-Click Analyze Movement
+---
 
-Review detected issues, ROM metrics, and coaching plan
+## 🚀 Usage
 
-Camera Setup:
+1. Upload squat video (or record via webcam)  
+2. Click **Analyze Movement**  
+3. Review detected issues, ROM metrics, and coaching plan  
 
-Front view, 6-10 feet away
+---
 
-Full body visible (head to feet)
+## Camera Setup
 
-Good lighting
+- Front view, 6–10 feet away  
+- Full body visible (head to feet)  
+- Good lighting  
+- Perform 3–5 slow reps  
 
-3-5 slow reps
+---
 
-Project Structure
-text
+## Project Structure
+```
 RehabAI/
 ├── app.py                         # Gradio web interface
 ├── requirements.txt               # Python dependencies
@@ -145,76 +143,62 @@ RehabAI/
 │       └── test_custom_eval.py   # Custom LLM-based evaluation
 └── docs/
     └── images/                   # README screenshots
-On Hugging Face Spaces the vector DB is rebuilt from data/literature/ at startup — data/vector_db/ is not committed.
+```
 
-Key Features
-Biomechanics Analysis
-Detects: knee valgus, asymmetries, limited ROM
+---
 
-Measures: knee/hip flexion angles (left/right)
+## ⭐ Key Features
 
-Quality score: 0-10 based on form issues
+### 🦵 Biomechanics Analysis
+- Detects: knee valgus, asymmetry, limited ROM  
+- Measures: knee/hip flexion angles (left/right)  
+- Quality score: **0–10**  
 
-RAG System
-Hybrid search (semantic + keyword)
+### 📚 RAG System
+- Hybrid search (semantic + keyword)  
+- Retrieves top-3 research papers  
+- Citations included  
 
-Retrieves top-3 relevant research papers
+### 🤖 LLM Coaching
+- Personalized corrective exercises  
+- Progressive difficulty  
+- Evidence-based recommendations  
+- Safety warnings  
 
-Citations included in coaching plan
+---
 
-Vector DB built at runtime from JSON corpus on Spaces
+## 🔐 Privacy
 
-LLM Coaching
-Personalized corrective exercises
+- Videos processed locally  
+- Temporary files auto-deleted  
+- Only metrics sent to LLM  
 
-Progressive difficulty
+---
 
-Evidence-based recommendations
+## ⚙️ Performance
 
-Safety warnings
+| Metric | Time |
+|--------|------|
+| Video Processing | 10–15s |
+| RAG Retrieval | <1s |
+| Coaching Generation | 5–8s |
+| **Total** | **15–25s** |
 
-Privacy
-Videos processed locally in the Space container
+---
 
-Temporary files auto-deleted after analysis
+## ⚠️ Disclaimer
 
-Only derived text/metrics sent to the LLM API, not raw video
+Educational purposes only.  
+Not a replacement for professional medical advice.
 
-Performance
-Metric	Time
-Video Processing	10-15s
-RAG Retrieval	<1s
-Coaching Generation	5-8s
-Total	15-25s
-Evaluation
-bash
-pytest tests/evaluation/test_custom_eval.py -v
-Metrics:
+---
 
-Answer Relevancy: 8+/10
+## 📄 License
 
-Faithfulness: 7+/10
+MIT License
 
-Context Quality: 7+/10
-
-Safety: PASS
-
-Future Work
-Multi-angle analysis
-
-Real-time webcam feedback with live corrections
-
-Disclaimer
-Educational purposes only. Not a replacement for professional medical advice. Consult a healthcare provider if you have injuries or medical conditions.
-
-License
-MIT License - See LICENSE
+---
 
 <div align="center">
-Made with ❤️ by Sowmiya
-
-GitHub •
-LinkedIn •
-🤗 Live Demo
-
-</div> 
+Made with ❤️ by Sowmiya  
+</div>
