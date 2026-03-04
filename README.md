@@ -99,7 +99,7 @@ Navigate to:
 
 ---
 
-## 🚀 Usage
+## Usage
 
 1. Upload squat video (or record via webcam)  
 2. Click **Analyze Movement**  
@@ -147,19 +147,19 @@ RehabAI/
 
 ---
 
-## ⭐ Key Features
+## Key Features
 
-### 🦵 Biomechanics Analysis
+### Biomechanics Analysis
 - Detects: knee valgus, asymmetry, limited ROM  
 - Measures: knee/hip flexion angles (left/right)  
 - Quality score: **0–10**  
 
-### 📚 RAG System
+### RAG System
 - Hybrid search (semantic + keyword)  
 - Retrieves top-3 research papers  
 - Citations included  
 
-### 🤖 LLM Coaching
+### LLM Coaching
 - Personalized corrective exercises  
 - Progressive difficulty  
 - Evidence-based recommendations  
@@ -167,7 +167,7 @@ RehabAI/
 
 ---
 
-## 🔐 Privacy
+## Privacy
 
 - Videos processed locally  
 - Temporary files auto-deleted  
@@ -175,7 +175,7 @@ RehabAI/
 
 ---
 
-## ⚙️ Performance
+## Performance
 
 | Metric | Time |
 |--------|------|
@@ -186,14 +186,14 @@ RehabAI/
 
 ---
 
-## ⚠️ Disclaimer
+## Disclaimer
 
 Educational purposes only.  
 Not a replacement for professional medical advice.
 
 ---
 
-## 📄 License
+## License
 
 MIT License
 
