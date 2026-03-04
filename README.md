@@ -80,7 +80,7 @@ Metrics    Evidence     Plan
 
 ---
 
-## ⚡ Quick Start
+## Quick Start
 
 ### Installation
 
