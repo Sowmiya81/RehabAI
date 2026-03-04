@@ -34,6 +34,7 @@ class AgentState(TypedDict):
     """State flowing through agent graph."""
     messages: Annotated[list[str], operator.add]
     video_path: str
+    exercise_type: str
     user_context: Optional[dict]
     
     current_step: int
@@ -271,15 +272,16 @@ Output ONLY this JSON:
         """Execute CV analysis."""
         
         video_path = state['video_path']
+        exercise_type = state.get('exercise_type', 'squat')
         
         logger.info("="*70)
         logger.info("ANALYZE VIDEO NODE")
         logger.info("="*70)
         
-        logger.info(f"Analyzing: {video_path}")
+        logger.info(f"Analyzing: {video_path} (exercise: {exercise_type})")
         
         try:
-            biomechanics = _get_biomechanics_analysis_impl(video_path, "squat")
+            biomechanics = _get_biomechanics_analysis_impl(video_path, exercise_type)
             
             logger.info("FULL BIOMECHANICS OUTPUT:")
             logger.info(json.dumps(biomechanics, indent=2, default=str))
@@ -302,13 +304,13 @@ Output ONLY this JSON:
                     logger.warning("⚠️ ASYMMETRY DETECTED BUT NO ISSUES!")
                     logger.warning("Check biomechanics.py thresholds")
             
-            # Generate queries
+            # Generate queries using actual exercise type
             queries = []
             if issues:
                 for issue in issues[:2]:
-                    queries.append(f"{issue.get('type', 'movement')} correction squat")
+                    queries.append(f"{issue.get('type', 'movement')} correction {exercise_type}")
             else:
-                queries = ["squat form optimization", "squat mobility"]
+                queries = [f"{exercise_type} form optimization", f"{exercise_type} mobility"]
             
             logger.info(f"Generated queries: {queries}")
             logger.info("="*70)
@@ -324,14 +326,15 @@ Output ONLY this JSON:
             logger.error("="*70)
             return {
                 "biomechanics": {"error": str(e), "issues": []},
-                "search_queries": ["squat general"],
+                "search_queries": [f"{exercise_type} general"],
                 "messages": [f"Analysis failed: {e}"]
             }
     
     def _search_literature_node(self, state: AgentState) -> dict:
         """Execute RAG search."""
         
-        queries = state.get('search_queries', []) or ["squat correction"]
+        exercise_type = state.get('exercise_type', 'squat')
+        queries = state.get('search_queries', []) or [f"{exercise_type} correction"]
         
         logger.info("="*70)
         logger.info("SEARCH LITERATURE NODE")
@@ -487,12 +490,13 @@ Keep it concise.
         
         return "\n".join(formatted)
     
-    def run(self, video_path: str, user_context: dict = None) -> dict:
+    def run(self, video_path: str, exercise_type: str = "squat", user_context: dict = None) -> dict:
         """Run agent."""
         
         initial_state = {
             "messages": [],
             "video_path": video_path,
+            "exercise_type": exercise_type,
             "user_context": user_context or {},
             "current_step": 0,
             "max_steps": self.max_steps,

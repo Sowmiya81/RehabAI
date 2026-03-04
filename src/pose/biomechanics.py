@@ -14,6 +14,10 @@ logger = logging.getLogger(__name__)
 # MediaPipe Pose landmark indices
 LEFT_SHOULDER = 11
 RIGHT_SHOULDER = 12
+LEFT_ELBOW = 13
+RIGHT_ELBOW = 14
+LEFT_WRIST = 15
+RIGHT_WRIST = 16
 LEFT_HIP = 23
 RIGHT_HIP = 24
 LEFT_KNEE = 25
@@ -115,6 +119,10 @@ def extract_joint_angles(keypoints: np.ndarray) -> Optional[Dict[str, float]]:
         landmarks = {
             'left_shoulder': keypoints[LEFT_SHOULDER],
             'right_shoulder': keypoints[RIGHT_SHOULDER],
+            'left_elbow': keypoints[LEFT_ELBOW],
+            'right_elbow': keypoints[RIGHT_ELBOW],
+            'left_wrist': keypoints[LEFT_WRIST],
+            'right_wrist': keypoints[RIGHT_WRIST],
             'left_hip': keypoints[LEFT_HIP],
             'right_hip': keypoints[RIGHT_HIP],
             'left_knee': keypoints[LEFT_KNEE],
@@ -157,6 +165,20 @@ def extract_joint_angles(keypoints: np.ndarray) -> Optional[Dict[str, float]]:
             landmarks['right_shoulder'],
             landmarks['right_hip'],
             landmarks['right_knee']
+        )
+        
+        # Calculate left elbow angle (shoulder-elbow-wrist)
+        angles['left_elbow_angle'] = calculate_angle(
+            landmarks['left_shoulder'],
+            landmarks['left_elbow'],
+            landmarks['left_wrist']
+        )
+        
+        # Calculate right elbow angle (shoulder-elbow-wrist)
+        angles['right_elbow_angle'] = calculate_angle(
+            landmarks['right_shoulder'],
+            landmarks['right_elbow'],
+            landmarks['right_wrist']
         )
         
         # Calculate spine angle (torso from vertical)
@@ -527,3 +549,438 @@ def analyze_squat_form(
         "metrics": metrics
     }
 
+
+def analyze_pullup_form(
+    keypoints_sequence: np.ndarray,
+    fps: int = 30
+) -> Dict:
+    """
+    Analyze pull-up form from a sequence of pose keypoints.
+
+    Detects form issues including insufficient ROM, elbow asymmetry,
+    excessive body swing, and insufficient height.
+
+    Args:
+        keypoints_sequence: Numpy array of shape (num_frames, 33, 3).
+        fps: Frames per second of the video. Defaults to 30.
+
+    Returns:
+        Dictionary with exercise, duration_sec, issues, and metrics.
+    """
+    if keypoints_sequence is None or len(keypoints_sequence) == 0:
+        return {"exercise": "pull-up", "duration_sec": 0.0, "issues": [], "metrics": {}}
+
+    num_frames = len(keypoints_sequence)
+    duration_sec = num_frames / fps
+
+    all_angles = []
+    valid_frames = []
+
+    for frame_idx in range(num_frames):
+        angles = extract_joint_angles(keypoints_sequence[frame_idx])
+        if angles is not None:
+            all_angles.append(angles)
+            valid_frames.append(frame_idx)
+        else:
+            all_angles.append(None)
+
+    if len(valid_frames) == 0:
+        return {"exercise": "pull-up", "duration_sec": duration_sec, "issues": [], "metrics": {}}
+
+    issues = []
+
+    left_elbow_angles = []
+    right_elbow_angles = []
+    spine_angles = []
+    shoulder_y_values = []
+
+    elbow_asymmetry_frames = []
+    body_swing_frames = []
+
+    for frame_idx in valid_frames:
+        angles = all_angles[frame_idx]
+        if angles is None:
+            continue
+
+        timestamp = frame_idx / fps
+
+        left_elbow_angles.append(angles['left_elbow_angle'])
+        right_elbow_angles.append(angles['right_elbow_angle'])
+        spine_angles.append(angles['spine_angle'])
+
+        # Track shoulder height (lower Y = higher on screen in normalized coords)
+        keypoints = keypoints_sequence[frame_idx]
+        avg_shoulder_y = (keypoints[LEFT_SHOULDER][1] + keypoints[RIGHT_SHOULDER][1]) / 2
+        shoulder_y_values.append(avg_shoulder_y)
+
+        # 1. Detect elbow asymmetry (>10 degrees difference)
+        elbow_diff = abs(angles['left_elbow_angle'] - angles['right_elbow_angle'])
+        if elbow_diff > 10:
+            elbow_asymmetry_frames.append({
+                'frame': frame_idx, 'timestamp': timestamp, 'difference': elbow_diff
+            })
+
+        # 2. Detect excessive body swing (spine angle > 30 degrees from vertical)
+        if angles['spine_angle'] > 30:
+            body_swing_frames.append({
+                'frame': frame_idx, 'timestamp': timestamp, 'angle': angles['spine_angle']
+            })
+
+    # Issue: Elbow asymmetry
+    if elbow_asymmetry_frames:
+        avg_diff = np.mean([f['difference'] for f in elbow_asymmetry_frames])
+        severity = "mild" if avg_diff < 15 else "moderate" if avg_diff < 20 else "severe"
+        issues.append({
+            "type": "asymmetry",
+            "severity": severity,
+            "side": "both",
+            "magnitude_degrees": round(avg_diff, 1),
+            "frames": [f['frame'] for f in elbow_asymmetry_frames],
+            "timestamps_sec": [round(f['timestamp'], 2) for f in elbow_asymmetry_frames],
+            "description": f"Elbow angle asymmetry detected. Average difference: {avg_diff:.1f}° between left and right."
+        })
+
+    # Issue: Body swing
+    if body_swing_frames:
+        avg_angle = np.mean([f['angle'] for f in body_swing_frames])
+        severity = "mild" if avg_angle < 40 else "moderate" if avg_angle < 50 else "severe"
+        issues.append({
+            "type": "body_swing",
+            "severity": severity,
+            "side": "both",
+            "magnitude_degrees": round(avg_angle, 1),
+            "frames": [f['frame'] for f in body_swing_frames],
+            "timestamps_sec": [round(f['timestamp'], 2) for f in body_swing_frames],
+            "description": f"Excessive body swing detected. Average deviation: {avg_angle:.1f}° (target: <30°)."
+        })
+
+    # Issue: Insufficient elbow ROM (should go from ~170° extended to ~40° flexed)
+    if left_elbow_angles and right_elbow_angles:
+        left_rom = max(left_elbow_angles) - min(left_elbow_angles)
+        right_rom = max(right_elbow_angles) - min(right_elbow_angles)
+        avg_rom = (left_rom + right_rom) / 2
+
+        if avg_rom < 80:  # Minimal ROM indicates partial reps
+            severity = "mild" if avg_rom > 60 else "moderate" if avg_rom > 40 else "severe"
+            issues.append({
+                "type": "limited_rom",
+                "severity": severity,
+                "side": "both",
+                "magnitude_degrees": round(avg_rom, 1),
+                "frames": [],
+                "timestamps_sec": [],
+                "description": f"Insufficient range of motion. Average elbow ROM: {avg_rom:.1f}° (target: >80°)."
+            })
+
+    # Metrics
+    metrics = {}
+    if left_elbow_angles and right_elbow_angles:
+        metrics["elbow_flexion_rom"] = {
+            "left": round(max(left_elbow_angles) - min(left_elbow_angles), 1),
+            "right": round(max(right_elbow_angles) - min(right_elbow_angles), 1)
+        }
+
+    return {
+        "exercise": "pull-up",
+        "duration_sec": round(duration_sec, 2),
+        "issues": issues,
+        "metrics": metrics
+    }
+
+
+def analyze_pushup_form(
+    keypoints_sequence: np.ndarray,
+    fps: int = 30
+) -> Dict:
+    """
+    Analyze push-up form from a sequence of pose keypoints.
+
+    Detects form issues including sagging hips, elbow asymmetry,
+    insufficient depth, and limited range of motion.
+
+    Args:
+        keypoints_sequence: Numpy array of shape (num_frames, 33, 3).
+        fps: Frames per second of the video. Defaults to 30.
+
+    Returns:
+        Dictionary with exercise, duration_sec, issues, and metrics.
+    """
+    if keypoints_sequence is None or len(keypoints_sequence) == 0:
+        return {"exercise": "push-up", "duration_sec": 0.0, "issues": [], "metrics": {}}
+
+    num_frames = len(keypoints_sequence)
+    duration_sec = num_frames / fps
+
+    all_angles = []
+    valid_frames = []
+
+    for frame_idx in range(num_frames):
+        angles = extract_joint_angles(keypoints_sequence[frame_idx])
+        if angles is not None:
+            all_angles.append(angles)
+            valid_frames.append(frame_idx)
+        else:
+            all_angles.append(None)
+
+    if len(valid_frames) == 0:
+        return {"exercise": "push-up", "duration_sec": duration_sec, "issues": [], "metrics": {}}
+
+    issues = []
+
+    left_elbow_angles = []
+    right_elbow_angles = []
+    spine_angles = []
+
+    sagging_hip_frames = []
+    elbow_asymmetry_frames = []
+
+    for frame_idx in valid_frames:
+        angles = all_angles[frame_idx]
+        if angles is None:
+            continue
+
+        timestamp = frame_idx / fps
+
+        left_elbow_angles.append(angles['left_elbow_angle'])
+        right_elbow_angles.append(angles['right_elbow_angle'])
+        spine_angles.append(angles['spine_angle'])
+
+        # 1. Detect sagging hips (spine angle > 25° indicates body not straight)
+        if angles['spine_angle'] > 25:
+            sagging_hip_frames.append({
+                'frame': frame_idx, 'timestamp': timestamp, 'angle': angles['spine_angle']
+            })
+
+        # 2. Detect elbow asymmetry
+        elbow_diff = abs(angles['left_elbow_angle'] - angles['right_elbow_angle'])
+        if elbow_diff > 10:
+            elbow_asymmetry_frames.append({
+                'frame': frame_idx, 'timestamp': timestamp, 'difference': elbow_diff
+            })
+
+    # Issue: Sagging hips
+    if sagging_hip_frames:
+        avg_angle = np.mean([f['angle'] for f in sagging_hip_frames])
+        severity = "mild" if avg_angle < 35 else "moderate" if avg_angle < 45 else "severe"
+        issues.append({
+            "type": "sagging_hips",
+            "severity": severity,
+            "side": "both",
+            "magnitude_degrees": round(avg_angle, 1),
+            "frames": [f['frame'] for f in sagging_hip_frames],
+            "timestamps_sec": [round(f['timestamp'], 2) for f in sagging_hip_frames],
+            "description": f"Hip sag detected — body not maintaining straight line. "
+                          f"Average spine angle: {avg_angle:.1f}° (target: <25°)."
+        })
+
+    # Issue: Elbow asymmetry
+    if elbow_asymmetry_frames:
+        avg_diff = np.mean([f['difference'] for f in elbow_asymmetry_frames])
+        severity = "mild" if avg_diff < 15 else "moderate" if avg_diff < 20 else "severe"
+        issues.append({
+            "type": "asymmetry",
+            "severity": severity,
+            "side": "both",
+            "magnitude_degrees": round(avg_diff, 1),
+            "frames": [f['frame'] for f in elbow_asymmetry_frames],
+            "timestamps_sec": [round(f['timestamp'], 2) for f in elbow_asymmetry_frames],
+            "description": f"Elbow angle asymmetry detected. Average difference: {avg_diff:.1f}° between left and right."
+        })
+
+    # Issue: Insufficient depth (elbow should reach ~90° at bottom)
+    if left_elbow_angles and right_elbow_angles:
+        min_left = min(left_elbow_angles)
+        min_right = min(right_elbow_angles)
+        min_elbow = min(min_left, min_right)
+
+        if min_elbow > 110:  # Not reaching 90° bend
+            severity = "mild" if min_elbow < 130 else "moderate" if min_elbow < 150 else "severe"
+            issues.append({
+                "type": "insufficient_depth",
+                "severity": severity,
+                "side": "both",
+                "magnitude_degrees": round(min_elbow, 1),
+                "frames": [],
+                "timestamps_sec": [],
+                "description": f"Insufficient push-up depth. Minimum elbow angle: {min_elbow:.1f}° "
+                              f"(target: elbows should reach ~90°)."
+            })
+
+    # Metrics
+    metrics = {}
+    if left_elbow_angles and right_elbow_angles:
+        metrics["elbow_flexion_rom"] = {
+            "left": round(max(left_elbow_angles) - min(left_elbow_angles), 1),
+            "right": round(max(right_elbow_angles) - min(right_elbow_angles), 1)
+        }
+
+    return {
+        "exercise": "push-up",
+        "duration_sec": round(duration_sec, 2),
+        "issues": issues,
+        "metrics": metrics
+    }
+
+
+def analyze_situp_form(
+    keypoints_sequence: np.ndarray,
+    fps: int = 30
+) -> Dict:
+    """
+    Analyze situp form from a sequence of pose keypoints.
+
+    Detects form issues including hip asymmetry, excessive neck strain,
+    and insufficient range of motion.
+
+    Args:
+        keypoints_sequence: Numpy array of shape (num_frames, 33, 3).
+        fps: Frames per second of the video. Defaults to 30.
+
+    Returns:
+        Dictionary with exercise, duration_sec, issues, and metrics.
+    """
+    if keypoints_sequence is None or len(keypoints_sequence) == 0:
+        return {"exercise": "situp", "duration_sec": 0.0, "issues": [], "metrics": {}}
+
+    num_frames = len(keypoints_sequence)
+    duration_sec = num_frames / fps
+
+    all_angles = []
+    valid_frames = []
+
+    for frame_idx in range(num_frames):
+        angles = extract_joint_angles(keypoints_sequence[frame_idx])
+        if angles is not None:
+            all_angles.append(angles)
+            valid_frames.append(frame_idx)
+        else:
+            all_angles.append(None)
+
+    if len(valid_frames) == 0:
+        return {"exercise": "situp", "duration_sec": duration_sec, "issues": [], "metrics": {}}
+
+    issues = []
+
+    left_hip_angles = []
+    right_hip_angles = []
+    spine_angles = []
+
+    hip_asymmetry_frames = []
+    neck_strain_frames = []
+
+    for frame_idx in valid_frames:
+        angles = all_angles[frame_idx]
+        if angles is None:
+            continue
+
+        timestamp = frame_idx / fps
+
+        left_hip_angles.append(angles['left_hip_angle'])
+        right_hip_angles.append(angles['right_hip_angle'])
+        spine_angles.append(angles['spine_angle'])
+
+        # 1. Detect hip asymmetry
+        hip_diff = abs(angles['left_hip_angle'] - angles['right_hip_angle'])
+        if hip_diff > 10:
+            hip_asymmetry_frames.append({
+                'frame': frame_idx, 'timestamp': timestamp, 'difference': hip_diff
+            })
+
+        # 2. Detect excessive neck strain (spine angle significantly exceeds hip flexion)
+        avg_hip = (angles['left_hip_angle'] + angles['right_hip_angle']) / 2
+        if angles['spine_angle'] > avg_hip + 20:
+            neck_strain_frames.append({
+                'frame': frame_idx, 'timestamp': timestamp,
+                'angle': angles['spine_angle'] - avg_hip
+            })
+
+    # Issue: Hip asymmetry
+    if hip_asymmetry_frames:
+        avg_diff = np.mean([f['difference'] for f in hip_asymmetry_frames])
+        severity = "mild" if avg_diff < 15 else "moderate" if avg_diff < 20 else "severe"
+        issues.append({
+            "type": "asymmetry",
+            "severity": severity,
+            "side": "both",
+            "magnitude_degrees": round(avg_diff, 1),
+            "frames": [f['frame'] for f in hip_asymmetry_frames],
+            "timestamps_sec": [round(f['timestamp'], 2) for f in hip_asymmetry_frames],
+            "description": f"Hip angle asymmetry detected during situp. "
+                          f"Average difference: {avg_diff:.1f}° between left and right."
+        })
+
+    # Issue: Neck strain
+    if neck_strain_frames:
+        avg_strain = np.mean([f['angle'] for f in neck_strain_frames])
+        severity = "mild" if avg_strain < 25 else "moderate" if avg_strain < 35 else "severe"
+        issues.append({
+            "type": "neck_strain",
+            "severity": severity,
+            "side": "both",
+            "magnitude_degrees": round(avg_strain, 1),
+            "frames": [f['frame'] for f in neck_strain_frames],
+            "timestamps_sec": [round(f['timestamp'], 2) for f in neck_strain_frames],
+            "description": f"Excessive neck strain detected — upper body curling beyond hip flexion. "
+                          f"Average excess angle: {avg_strain:.1f}°."
+        })
+
+    # Issue: Insufficient ROM (hip should flex significantly)
+    if left_hip_angles and right_hip_angles:
+        left_rom = max(left_hip_angles) - min(left_hip_angles)
+        right_rom = max(right_hip_angles) - min(right_hip_angles)
+        avg_rom = (left_rom + right_rom) / 2
+
+        if avg_rom < 40:  # Minimal hip ROM
+            severity = "mild" if avg_rom > 30 else "moderate" if avg_rom > 20 else "severe"
+            issues.append({
+                "type": "limited_rom",
+                "severity": severity,
+                "side": "both",
+                "magnitude_degrees": round(avg_rom, 1),
+                "frames": [],
+                "timestamps_sec": [],
+                "description": f"Insufficient range of motion. Average hip ROM: {avg_rom:.1f}° (target: >40°)."
+            })
+
+    # Metrics
+    metrics = {}
+    if left_hip_angles and right_hip_angles:
+        metrics["hip_flexion_rom"] = {
+            "left": round(max(left_hip_angles) - min(left_hip_angles), 1),
+            "right": round(max(right_hip_angles) - min(right_hip_angles), 1)
+        }
+
+    return {
+        "exercise": "situp",
+        "duration_sec": round(duration_sec, 2),
+        "issues": issues,
+        "metrics": metrics
+    }
+
+
+def analyze_exercise_form(
+    keypoints_sequence: np.ndarray,
+    exercise_type: str = "squat",
+    fps: int = 30
+) -> Dict:
+    """
+    Dispatch to the appropriate exercise analysis function.
+
+    Args:
+        keypoints_sequence: Numpy array of shape (num_frames, 33, 3).
+        exercise_type: One of "squat", "pull-up", "push-up", "situp".
+        fps: Frames per second of the video. Defaults to 30.
+
+    Returns:
+        Dictionary with exercise, duration_sec, issues, and metrics.
+    """
+    dispatchers = {
+        "squat": analyze_squat_form,
+        "pull-up": analyze_pullup_form,
+        "push-up": analyze_pushup_form,
+        "situp": analyze_situp_form,
+    }
+
+    analyze_fn = dispatchers.get(exercise_type, analyze_squat_form)
+    logger.info(f"Analyzing exercise: {exercise_type}")
+    return analyze_fn(keypoints_sequence, fps)
