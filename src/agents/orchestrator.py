@@ -88,6 +88,12 @@ class RehabCoachAgent:
             self.vector_store = VectorStore(persist_directory="./data/vector_db")
             self.vector_store.create_collection(collection_name="rehab_literature")
             logger.info("  ✓ Vector store created")
+
+            if self.vector_store.count() == 0:
+                logger.info("Vector DB empty — running ingestion pipeline...")
+                from src.rag.ingest import ingest_literature
+                ingested = ingest_literature(self.vector_store, embedder)
+                logger.info(f"Ingestion complete: {ingested} documents added")
             
             # Create retriever with embedder and vector store
             retriever = HybridRetriever(embedder=embedder, vector_store=self.vector_store)
